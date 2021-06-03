@@ -3,7 +3,7 @@
  *
  * It directly deserializes and serializes messages from network, minimizing
  * memory use.
- * 
+ *
  * For flexibility, this example is implemented using posix api.
  * In a real embedded system you would typically use some other kind of
  * a communication and filesystem layer.
@@ -68,31 +68,31 @@ bool ListFilesResponse_callback(pb_istream_t *istream, pb_ostream_t *ostream, co
 void handle_connection(int connfd)
 {
     DIR *directory = NULL;
-    
+
     /* Decode the message from the client and open the requested directory. */
     {
         ListFilesRequest request = {};
         pb_istream_t input = pb_istream_from_socket(connfd);
-        
+
         if (!pb_decode_delimited(&input, ListFilesRequest_fields, &request))
         {
             printf("Decode failed: %s\n", PB_GET_ERROR(&input));
             return;
         }
-        
+
         directory = opendir(request.path);
         printf("Listing directory: %s\n", request.path);
     }
-    
+
     /* List the files in the directory and transmit the response to client */
     {
         ListFilesResponse response = {};
         pb_ostream_t output = pb_ostream_from_socket(connfd);
-        
+
         if (directory == NULL)
         {
             perror("opendir");
-            
+
             /* Directory was not found, transmit error status */
             response.has_path_error = true;
             response.path_error = true;
@@ -103,13 +103,13 @@ void handle_connection(int connfd)
             response.has_path_error = false;
             response.file = directory;
         }
-        
+
         if (!pb_encode_delimited(&output, ListFilesResponse_fields, &response))
         {
             printf("Encoding failed: %s\n", PB_GET_ERROR(&output));
         }
     }
-    
+
     if (directory != NULL)
         closedir(directory);
 }
@@ -119,11 +119,11 @@ int main(int argc, char **argv)
     int listenfd, connfd;
     struct sockaddr_in servaddr;
     int reuse = 1;
-    
+
     /* Listen on localhost:1234 for TCP connections */
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
     setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse));
-    
+
     memset(&servaddr, 0, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
@@ -133,32 +133,32 @@ int main(int argc, char **argv)
         perror("bind");
         return 1;
     }
-    
+
     if (listen(listenfd, 5) != 0)
     {
         perror("listen");
         return 1;
     }
-    
+
     for(;;)
     {
         /* Wait for a client */
         connfd = accept(listenfd, NULL, NULL);
-        
+
         if (connfd < 0)
         {
             perror("accept");
             return 1;
         }
-        
+
         printf("Got connection.\n");
-        
+
         handle_connection(connfd);
-        
+
         printf("Closing connection.\n");
-        
+
         close(connfd);
     }
-    
+
     return 0;
 }

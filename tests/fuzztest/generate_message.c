@@ -29,12 +29,12 @@ static void limit_sizes(alltypes_static_AllTypes *msg)
         {
             ((pb_bytes_array_t*)iter.pData)->size %= iter.data_size - PB_BYTES_ARRAY_T_ALLOCSIZE(0);
         }
-        
+
         if (PB_HTYPE(iter.type) == PB_HTYPE_REPEATED)
         {
             *((pb_size_t*)iter.pSize) %= iter.array_size;
         }
-        
+
         if (PB_HTYPE(iter.type) == PB_HTYPE_ONEOF)
         {
             /* Set the oneof to this message type with 50% chance. */
@@ -54,7 +54,7 @@ static void generate_message()
 
     static uint8_t buf[FUZZTEST_BUFSIZE];
     pb_ostream_t stream = {0};
-    
+
     do {
         rand_fill((void*)&msg, sizeof(msg));
         limit_sizes(&msg);
@@ -67,7 +67,7 @@ static void generate_message()
 
         stream = pb_ostream_from_buffer(buf, sizeof(buf));
     } while (!pb_encode(&stream, alltypes_static_AllTypes_fields, &msg));
-    
+
     fwrite(buf, 1, stream.bytes_written, stdout);
 }
 
@@ -82,7 +82,6 @@ int main(int argc, char **argv)
     random_set_seed(atol(argv[1]));
 
     generate_message();
-    
+
     return 0;
 }
-

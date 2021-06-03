@@ -20,7 +20,7 @@ static bool read_varint(pb_istream_t *stream, const pb_field_t *field, void **ar
     uint64_t value;
     if (!pb_decode_varint(stream, &value))
         return false;
-    
+
     TEST((int64_t)value == (intptr_t)*arg);
     return true;
 }
@@ -30,7 +30,7 @@ static bool read_svarint(pb_istream_t *stream, const pb_field_t *field, void **a
     int64_t value;
     if (!pb_decode_svarint(stream, &value))
         return false;
-    
+
     TEST(value == (intptr_t)*arg);
     return true;
 }
@@ -40,7 +40,7 @@ static bool read_fixed32(pb_istream_t *stream, const pb_field_t *field, void **a
     uint32_t value;
     if (!pb_decode_fixed32(stream, &value))
         return false;
-    
+
     TEST(value == *(uint32_t*)*arg);
     return true;
 }
@@ -50,7 +50,7 @@ static bool read_fixed64(pb_istream_t *stream, const pb_field_t *field, void **a
     uint64_t value;
     if (!pb_decode_fixed64(stream, &value))
         return false;
-    
+
     TEST(value == *(uint64_t*)*arg);
     return true;
 }
@@ -63,7 +63,7 @@ static bool read_double(pb_istream_t *stream, const pb_field_t *field, void **ar
         float value;
         if (!pb_decode_double_as_float(stream, &value))
             return false;
-        
+
         TEST(memcmp(&value, *arg, sizeof(float)) == 0);
         return true;
     }
@@ -72,7 +72,7 @@ static bool read_double(pb_istream_t *stream, const pb_field_t *field, void **ar
     uint64_t value;
     if (!pb_decode_fixed64(stream, &value))
         return false;
-    
+
     TEST(value == *(uint64_t*)*arg);
     return true;
 }
@@ -81,10 +81,10 @@ static bool read_string(pb_istream_t *stream, const pb_field_t *field, void **ar
 {
     uint8_t buf[16] = {0};
     size_t len = stream->bytes_left;
-    
+
     if (len > sizeof(buf) - 1 || !pb_read(stream, buf, len))
         return false;
-    
+
     TEST(strcmp((char*)buf, *arg) == 0);
     return true;
 }
@@ -93,13 +93,13 @@ static bool read_submsg(pb_istream_t *stream, const pb_field_t *field, void **ar
 {
     SubMessage submsg = {""};
     SubMessage *ref = *arg;
-    
+
     if (!pb_decode(stream, SubMessage_fields, &submsg))
         return false;
-    
+
     TEST(strcmp(submsg.substuff1, ref->substuff1) == 0);
     TEST(submsg.substuff2 == ref->substuff2);
-    TEST(submsg.substuff3 == ref->substuff3); 
+    TEST(submsg.substuff3 == ref->substuff3);
     return true;
 }
 
@@ -162,7 +162,7 @@ static bool read_repeated_double(pb_istream_t *stream, const pb_field_t *field, 
         float value;
         if (!pb_decode_double_as_float(stream, &value))
             return false;
-        
+
         TEST(memcmp(&value, (*expectedf)++, sizeof(float)) == 0);
         return true;
     }
@@ -182,10 +182,10 @@ static bool read_repeated_string(pb_istream_t *stream, const pb_field_t *field, 
     uint8_t*** expected = (uint8_t***)arg;
     uint8_t buf[16] = {0};
     size_t len = stream->bytes_left;
-    
+
     if (len > sizeof(buf) - 1 || !pb_read(stream, buf, len))
         return false;
-    
+
     TEST(strcmp((char*)*(*expected)++, (char*)buf) == 0);
     return true;
 }
@@ -221,7 +221,7 @@ static bool read_limits(pb_istream_t *stream, const pb_field_t *field, void **ar
     TEST(decoded.uint64_max == UINT64_MAX);
     TEST(decoded.enum_min   == HugeEnum_Negative);
     TEST(decoded.enum_max   == HugeEnum_Positive);
-    
+
     return true;
 }
 
@@ -231,7 +231,7 @@ bool check_alltypes(pb_istream_t *stream, int mode)
 {
     /* Values for use from callbacks through pointers. */
     bool status;
-    
+
     int32_t     rep_int32[5]    = {0, 0, 0, 0, -2001};
     int32_t     rep_int64[5]    = {0, 0, 0, 0, -2002};
     int32_t     rep_uint32[5]   = {0, 0, 0, 0,  2003};
@@ -253,7 +253,7 @@ bool check_alltypes(pb_istream_t *stream, int mode)
                                    {"", 0, 0},
                                    {"2016", 2016, 2016}};
     int32_t     rep_enum[5]     = {0, 0, 0, 0, MyEnum_Truth};
-    
+
     uint32_t    sng_fixed32     = 3048;
     int32_t     sng_sfixed32    = 3049;
     float       sng_float       = 3050.0f;
@@ -263,130 +263,130 @@ bool check_alltypes(pb_istream_t *stream, int mode)
     SubMessage  sng_submsg      = {"3056", 3056};
 
     SubMessage  oneof_msg1      = {"4059", 4059};
-    
+
     AllTypes alltypes = AllTypes_init_zero;
 
     /* Bind callbacks for repeated fields */
     alltypes.rep_int32.funcs.decode = &read_repeated_varint;
     alltypes.rep_int32.arg = rep_int32;
-    
+
     alltypes.rep_int64.funcs.decode = &read_repeated_varint;
     alltypes.rep_int64.arg = rep_int64;
-    
+
     alltypes.rep_uint32.funcs.decode = &read_repeated_varint;
     alltypes.rep_uint32.arg = rep_uint32;
-    
+
     alltypes.rep_uint64.funcs.decode = &read_repeated_varint;
     alltypes.rep_uint64.arg = rep_uint64;
-    
+
     alltypes.rep_sint32.funcs.decode = &read_repeated_svarint;
     alltypes.rep_sint32.arg = rep_sint32;
-    
+
     alltypes.rep_sint64.funcs.decode = &read_repeated_svarint;
     alltypes.rep_sint64.arg = rep_sint64;
-    
+
     alltypes.rep_bool.funcs.decode = &read_repeated_varint;
     alltypes.rep_bool.arg = rep_bool;
-    
+
     alltypes.rep_fixed32.funcs.decode = &read_repeated_fixed32;
     alltypes.rep_fixed32.arg = rep_fixed32;
-    
+
     alltypes.rep_sfixed32.funcs.decode = &read_repeated_fixed32;
     alltypes.rep_sfixed32.arg = rep_sfixed32;
-    
+
     alltypes.rep_float.funcs.decode = &read_repeated_fixed32;
     alltypes.rep_float.arg = rep_float;
-    
+
     alltypes.rep_fixed64.funcs.decode = &read_repeated_fixed64;
     alltypes.rep_fixed64.arg = rep_fixed64;
-    
+
     alltypes.rep_sfixed64.funcs.decode = &read_repeated_fixed64;
     alltypes.rep_sfixed64.arg = rep_sfixed64;
-    
+
     alltypes.rep_double.funcs.decode = &read_repeated_double;
     alltypes.rep_double.arg = rep_double;
-    
+
     alltypes.rep_string.funcs.decode = &read_repeated_string;
     alltypes.rep_string.arg = rep_string;
-    
+
     alltypes.rep_bytes.funcs.decode = &read_repeated_string;
     alltypes.rep_bytes.arg = rep_bytes;
-    
+
     alltypes.rep_submsg.funcs.decode = &read_repeated_submsg;
     alltypes.rep_submsg.arg = rep_submsg;
-    
+
     alltypes.rep_enum.funcs.decode = &read_repeated_varint;
     alltypes.rep_enum.arg = rep_enum;
-    
+
     alltypes.rep_emptymsg.funcs.decode = &read_emptymsg;
-    
+
     alltypes.req_limits.funcs.decode = &read_limits;
-    
+
     alltypes.end.funcs.decode = &read_varint;
     alltypes.end.arg = (void*)1099;
-    
+
     /* Bind callbacks for optional fields */
     if (mode == 1)
     {
         alltypes.sng_int32.funcs.decode = &read_varint;
         alltypes.sng_int32.arg = (void*)3041;
-        
+
         alltypes.sng_int64.funcs.decode = &read_varint;
         alltypes.sng_int64.arg = (void*)3042;
-        
+
         alltypes.sng_uint32.funcs.decode = &read_varint;
         alltypes.sng_uint32.arg = (void*)3043;
-        
+
         alltypes.sng_uint64.funcs.decode = &read_varint;
         alltypes.sng_uint64.arg = (void*)3044;
-        
+
         alltypes.sng_sint32.funcs.decode = &read_svarint;
         alltypes.sng_sint32.arg = (void*)3045;
-        
+
         alltypes.sng_sint64.funcs.decode = &read_svarint;
         alltypes.sng_sint64.arg = (void*)3046;
-        
+
         alltypes.sng_bool.funcs.decode = &read_varint;
         alltypes.sng_bool.arg = (void*)true;
 
         alltypes.sng_fixed32.funcs.decode = &read_fixed32;
         alltypes.sng_fixed32.arg = &sng_fixed32;
-        
+
         alltypes.sng_sfixed32.funcs.decode = &read_fixed32;
         alltypes.sng_sfixed32.arg = &sng_sfixed32;
-        
+
         alltypes.sng_float.funcs.decode = &read_fixed32;
         alltypes.sng_float.arg = &sng_float;
-        
+
         alltypes.sng_fixed64.funcs.decode = &read_fixed64;
         alltypes.sng_fixed64.arg = &sng_fixed64;
-        
+
         alltypes.sng_sfixed64.funcs.decode = &read_fixed64;
         alltypes.sng_sfixed64.arg = &sng_sfixed64;
-        
+
         alltypes.sng_double.funcs.decode = &read_double;
         alltypes.sng_double.arg = &sng_double;
-        
+
         alltypes.sng_string.funcs.decode = &read_string;
         alltypes.sng_string.arg = "3054";
-        
+
         alltypes.sng_bytes.funcs.decode = &read_string;
         alltypes.sng_bytes.arg = "3055";
-        
+
         alltypes.sng_submsg.funcs.decode = &read_submsg;
         alltypes.sng_submsg.arg = &sng_submsg;
-        
+
         alltypes.sng_enum.funcs.decode = &read_varint;
         alltypes.sng_enum.arg = (void*)MyEnum_Truth;
-        
+
         alltypes.sng_emptymsg.funcs.decode = &read_emptymsg;
 
         alltypes.oneof_msg1.funcs.decode = &read_submsg;
         alltypes.oneof_msg1.arg = &oneof_msg1;
     }
-    
+
     status = pb_decode(stream, AllTypes_fields, &alltypes);
-    
+
 #ifdef PB_ENABLE_MALLOC
     /* Just to check for any interference between pb_release() and callback fields */
     pb_release(AllTypes_fields, &alltypes);
@@ -403,14 +403,14 @@ int main(int argc, char **argv)
 
     /* Whether to expect the optional values or the default values. */
     int mode = (argc > 1) ? atoi(argv[1]) : 0;
-    
+
     /* Read the data into buffer */
     SET_BINARY_MODE(stdin);
     count = fread(buffer, 1, sizeof(buffer), stdin);
-    
+
     /* Construct a pb_istream_t for reading from the buffer */
     stream = pb_istream_from_buffer(buffer, count);
-    
+
     /* Decode and print out the stuff */
     if (!check_alltypes(&stream, mode))
     {

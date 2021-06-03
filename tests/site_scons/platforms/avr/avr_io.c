@@ -52,19 +52,19 @@ int main(void)
 {
     const char *argv[4] = {"main", g_args.args[0], g_args.args[1], g_args.args[2]};
     int status;
-    
+
     UBRR0 = (8000000 / (16UL * 9600)) - 1; /* 9600 bps with default 8 MHz clock */
     UCSR0B = _BV(TXEN0) | _BV(RXEN0);
-    
+
     __malloc_heap_start = g_malloc_heap;
     __malloc_heap_end = g_malloc_heap + sizeof(g_malloc_heap);
 
     __bss_end = 0xDEADBEEF;
 
     stdout = stdin = stderr = &uart_str;
-    
+
     fread((char*)&g_args, 1, sizeof(g_args), stdin);
-    
+
     status = app_main(g_args.argc + 1, argv);
 
     if (__bss_end != 0xDEADBEEF)
@@ -83,9 +83,8 @@ int main(void)
     {
         PORTB = 2; // PB1 indicates success
     }
-  
+
     cli();
     sleep_mode();
     return status;
 }
-

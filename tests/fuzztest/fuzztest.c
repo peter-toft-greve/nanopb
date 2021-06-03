@@ -105,7 +105,7 @@ static bool do_decode(const uint8_t *buffer, size_t msglen, size_t structsize, c
     free_with_check(msg);
     free_with_check(buf2);
     assert(get_alloc_count() == initial_alloc_count);
-    
+
     return status;
 }
 
@@ -221,7 +221,7 @@ void do_roundtrip(const uint8_t *buffer, size_t msglen, size_t structsize, const
     {
         ext_field = &((alltypes_pointer_AllTypes*)msg)->extensions;
     }
-    
+
     /* Decode and encode the input data.
      * This will bring it into canonical format.
      */
@@ -235,7 +235,7 @@ void do_roundtrip(const uint8_t *buffer, size_t msglen, size_t structsize, const
 
         validate_message(msg, structsize, msgtype);
     }
-    
+
     {
         pb_ostream_t stream = pb_ostream_from_buffer(buf2, g_bufsize);
         status = pb_encode(&stream, msgtype, msg);
@@ -251,7 +251,7 @@ void do_roundtrip(const uint8_t *buffer, size_t msglen, size_t structsize, const
         msglen2 = stream.bytes_written;
         checksum2 = xor32_checksum(buf2, msglen2);
     }
-    
+
     pb_release(msgtype, msg);
 
     /* Then decode from canonical format and re-encode. Result should remain the same. */
@@ -266,7 +266,7 @@ void do_roundtrip(const uint8_t *buffer, size_t msglen, size_t structsize, const
 
         validate_message(msg, structsize, msgtype);
     }
-    
+
     if (status)
     {
         pb_ostream_t stream = pb_ostream_from_buffer(buf2, g_bufsize);
@@ -279,7 +279,7 @@ void do_roundtrip(const uint8_t *buffer, size_t msglen, size_t structsize, const
         assert(msglen2 == msglen3);
         assert(checksum2 == checksum3);
     }
-    
+
     pb_release(msgtype, msg);
     free_with_check(msg);
     free_with_check(buf2);
@@ -381,11 +381,11 @@ static bool generate_base_message(uint8_t *buffer, size_t *msglen)
     status = pb_encode(&stream, alltypes_static_AllTypes_fields, msg);
     assert(stream.bytes_written <= g_bufsize);
     assert(stream.bytes_written <= alltypes_static_AllTypes_size);
-    
+
     *msglen = stream.bytes_written;
     pb_release(alltypes_static_AllTypes_fields, msg);
     free_with_check(msg);
-    
+
     return status;
 }
 
@@ -394,29 +394,29 @@ static void run_iteration()
 {
     uint8_t *buffer = malloc_with_check(g_bufsize);
     size_t msglen;
-    
+
     /* Fill the whole buffer with noise, to prepare for length modifications */
     rand_fill(buffer, g_bufsize);
 
     if (generate_base_message(buffer, &msglen))
     {
         rand_protobuf_noise(buffer, g_bufsize, &msglen);
-    
+
         /* At this point the message should always be valid */
         do_roundtrips(buffer, msglen, true);
-        
+
         /* Apply randomness to the encoded data */
         while (rand_bool())
             rand_mess(buffer, g_bufsize);
-        
+
         /* Apply randomness to encoded data length */
         if (rand_bool())
             msglen = rand_int(0, g_bufsize);
-        
+
         /* In this step the message may be valid or invalid */
         do_roundtrips(buffer, msglen, false);
     }
-    
+
     free_with_check(buffer);
     assert(get_alloc_count() == 0);
 }
@@ -463,7 +463,7 @@ int main(int argc, char **argv)
 
         free_with_check(buffer);
     }
-    
+
     return 0;
 }
 #endif

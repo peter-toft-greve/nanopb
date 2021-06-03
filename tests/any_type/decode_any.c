@@ -13,12 +13,12 @@ int main()
     pb_istream_t stream;
     size_t count;
     bool status;
-    
+
     /* Read the data into buffer */
     SET_BINARY_MODE(stdin);
     count = fread(buffer, 1, sizeof(buffer), stdin);
     stream = pb_istream_from_buffer(buffer, count);
-    
+
     /* Decode the base message */
     if (!pb_decode(&stream, BaseMessage_fields, &msg))
     {
@@ -46,4 +46,3 @@ int main()
         return 2;
     }
 }
-

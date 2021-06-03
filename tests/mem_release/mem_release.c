@@ -44,14 +44,14 @@ static bool test_TestMessage()
 {
     uint8_t buffer[256];
     size_t msgsize;
-    
+
     /* Construct a message with various fields filled in */
     {
         TestMessage msg = TestMessage_init_zero;
         pb_ostream_t stream;
 
         fill_TestMessage(&msg);
-        
+
         stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
         if (!pb_encode(&stream, TestMessage_fields, &msg))
         {
@@ -60,11 +60,11 @@ static bool test_TestMessage()
         }
         msgsize = stream.bytes_written;
     }
-    
+
     /* Output encoded message for debug */
     SET_BINARY_MODE(stdout);
     fwrite(buffer, 1, msgsize, stdout);
-    
+
     /* Decode memory using dynamic allocation */
     {
         TestMessage msg = TestMessage_init_zero;
@@ -78,14 +78,14 @@ static bool test_TestMessage()
         ext2.type = &static_ext;
         ext2.dest = &ext2_dest;
         ext2.next = NULL;
-        
+
         stream = pb_istream_from_buffer(buffer, msgsize);
         if (!pb_decode(&stream, TestMessage_fields, &msg))
         {
             fprintf(stderr, "Decode failed: %s\n", PB_GET_ERROR(&stream));
             return false;
         }
-        
+
         /* Make sure it encodes back to same data */
         {
             uint8_t buffer2[256];
@@ -94,19 +94,19 @@ static bool test_TestMessage()
             TEST(ostream.bytes_written == msgsize);
             TEST(memcmp(buffer, buffer2, msgsize) == 0);
         }
-        
+
         /* Make sure that malloc counters work */
         TEST(get_alloc_count() > 0);
-        
+
         /* Make sure that pb_release releases everything */
         pb_release(TestMessage_fields, &msg);
         TEST(get_alloc_count() == 0);
-        
+
         /* Check that double-free is a no-op */
         pb_release(TestMessage_fields, &msg);
         TEST(get_alloc_count() == 0);
     }
-    
+
     return true;
 }
 
@@ -243,4 +243,3 @@ int main()
     else
         return 1;
 }
-

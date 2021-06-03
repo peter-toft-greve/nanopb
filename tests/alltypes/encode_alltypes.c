@@ -14,10 +14,10 @@ extern "C"
 int main(int argc, char **argv)
 {
     int mode = (argc > 1) ? atoi(argv[1]) : 0;
-    
+
     /* Initialize the structure with constants */
     AllTypes alltypes = AllTypes_init_zero;
-    
+
     if (mode == 0 || mode == 1)
     {
         alltypes.req_int32         = -1001;
@@ -27,15 +27,15 @@ int main(int argc, char **argv)
         alltypes.req_sint32        = -1005;
         alltypes.req_sint64        = -1006;
         alltypes.req_bool          = true;
-        
+
         alltypes.req_fixed32       = 1008;
         alltypes.req_sfixed32      = -1009;
         alltypes.req_float         = 1010.0f;
-        
+
         alltypes.req_fixed64       = 1011;
         alltypes.req_sfixed64      = -1012;
         alltypes.req_double        = 1013.0;
-        
+
         strcpy(alltypes.req_string, "1014");
         alltypes.req_bytes.size = 4;
         memcpy(alltypes.req_bytes.bytes, "1015", 4);
@@ -43,7 +43,7 @@ int main(int argc, char **argv)
         alltypes.req_submsg.substuff2 = 1016;
         alltypes.req_enum = MyEnum_Truth;
         memcpy(alltypes.req_fbytes, "1019", 4);
-        
+
         alltypes.rep_int32_count = 5; alltypes.rep_int32[4] = -2001;
         alltypes.rep_int64_count = 5; alltypes.rep_int64[4] = -2002;
         alltypes.rep_uint32_count = 5; alltypes.rep_uint32[4] = 2003;
@@ -51,15 +51,15 @@ int main(int argc, char **argv)
         alltypes.rep_sint32_count = 5; alltypes.rep_sint32[4] = -2005;
         alltypes.rep_sint64_count = 5; alltypes.rep_sint64[4] = -2006;
         alltypes.rep_bool_count = 5; alltypes.rep_bool[4] = true;
-        
+
         alltypes.rep_fixed32_count = 5; alltypes.rep_fixed32[4] = 2008;
         alltypes.rep_sfixed32_count = 5; alltypes.rep_sfixed32[4] = -2009;
         alltypes.rep_float_count = 5; alltypes.rep_float[4] = 2010.0f;
-        
+
         alltypes.rep_fixed64_count = 5; alltypes.rep_fixed64[4] = 2011;
         alltypes.rep_sfixed64_count = 5; alltypes.rep_sfixed64[4] = -2012;
         alltypes.rep_double_count = 5; alltypes.rep_double[4] = 2013.0;
-        
+
         alltypes.rep_string_count = 5; strcpy(alltypes.rep_string[4], "2014");
         alltypes.rep_bytes_count = 5; alltypes.rep_bytes[4].size = 4;
         memcpy(alltypes.rep_bytes[4].bytes, "2015", 4);
@@ -69,13 +69,13 @@ int main(int argc, char **argv)
         alltypes.rep_submsg[4].substuff2 = 2016;
         alltypes.rep_submsg[4].has_substuff3 = true;
         alltypes.rep_submsg[4].substuff3 = 2016;
-        
+
         alltypes.rep_enum_count = 5; alltypes.rep_enum[4] = MyEnum_Truth;
         alltypes.rep_emptymsg_count = 5;
-        
+
         alltypes.rep_fbytes_count = 5;
         memcpy(alltypes.rep_fbytes[4], "2019", 4);
-        
+
         alltypes.rep_farray[4] = 2040;
         alltypes.rep_farray2[2] = 2095;
 
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
         alltypes.req_intsizes.req_uint16 = 65535;
         alltypes.req_intsizes.req_sint16 = -32768;
     }
-    
+
     if (mode == 1)
     {
         /* Fill in values for optional fields */
@@ -119,21 +119,21 @@ int main(int argc, char **argv)
         alltypes.opt_sint64        = 3046;
         alltypes.has_opt_bool = true;
         alltypes.opt_bool          = true;
-        
+
         alltypes.has_opt_fixed32 = true;
         alltypes.opt_fixed32       = 3048;
         alltypes.has_opt_sfixed32 = true;
         alltypes.opt_sfixed32      = 3049;
         alltypes.has_opt_float = true;
         alltypes.opt_float         = 3050.0f;
-        
+
         alltypes.has_opt_fixed64 = true;
         alltypes.opt_fixed64       = 3051;
         alltypes.has_opt_sfixed64 = true;
         alltypes.opt_sfixed64      = 3052;
         alltypes.has_opt_double = true;
         alltypes.opt_double        = 3053.0;
-        
+
         alltypes.has_opt_string = true;
         strcpy(alltypes.opt_string, "3054");
         alltypes.has_opt_bytes = true;
@@ -155,13 +155,13 @@ int main(int argc, char **argv)
         alltypes.has_opt_non_zero_based_enum = true;
         alltypes.opt_non_zero_based_enum = NonZeroBasedEnum_Three;
     }
-    
+
     alltypes.end = 1099;
-    
+
     {
         uint8_t buffer[AllTypes_size];
         pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
-        
+
         /* Now encode it and check if we succeeded. */
         if (pb_encode(&stream, AllTypes_fields, &alltypes))
         {

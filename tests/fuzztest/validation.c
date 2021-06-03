@@ -160,4 +160,3 @@ void validate_message(const void *msg, size_t structsize, const pb_msgdesc_t *ms
         } while (pb_field_iter_next(&iter));
     }
 }
-

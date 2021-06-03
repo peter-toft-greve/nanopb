@@ -22,7 +22,7 @@ int main(int argc, char **argv)
     msg.numbers[2].value = 7;
 
     stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
-    
+
     if (pb_encode(&stream, MyMessage_fields, &msg))
     {
         SET_BINARY_MODE(stdout);
